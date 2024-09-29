@@ -16,12 +16,27 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
-public class FileCopyApp {
+public class OTSPerformanceMeter {
 
+	private static final String HELP = """
+	This command line tool is designed to measure the time that OTS spends to process the files
+	copied in and `input folder` and write the result of the process in the `output folder`.
+	
+	Invocation example:
+
+	java -jar OTSPerformanceTest-24.09.29.jar /
+		-file C:\\performance\\example.pdf /
+		-input C:\\performance\\input /
+		-output C:\\performance\\output /
+		-copies 10000
+	""";
+	
+	private static final String LONG_PARAM_INPUT = "input";
 	private static final String LONG_PARAM_OUTPUT = "output";
 	private static final String LONG_PARAM_COPIES = "copies";
 	private static final String LONG_PARAM_FILE = "file";
 
+	private static final String SHORT_PARAM_INPUT = "i";	
 	private static final String SHORT_PARAM_OUTPUT = "o";
 	private static final String SHORT_PARAM_COPIES = "c";
 	private static final String SHORT_PARAM_FILE = "f";
@@ -31,6 +46,7 @@ public class FileCopyApp {
 
 		options.addOption(SHORT_PARAM_FILE, LONG_PARAM_FILE, true, "Path to input file (required)");
 		options.addOption(SHORT_PARAM_COPIES, LONG_PARAM_COPIES, true, "Number of copies (required)");
+		options.addOption(SHORT_PARAM_INPUT, LONG_PARAM_INPUT, true, "Input directory (required)");
 		options.addOption(SHORT_PARAM_OUTPUT, LONG_PARAM_OUTPUT, true, "Output directory (required)");
 
 		CommandLineParser parser = new DefaultParser();
@@ -42,12 +58,13 @@ public class FileCopyApp {
 			validateParams(cmd);
 			String filePath = cmd.getOptionValue(SHORT_PARAM_FILE);
 			int copies = Integer.parseInt(cmd.getOptionValue(SHORT_PARAM_COPIES));
+			String inputDir = cmd.getOptionValue(SHORT_PARAM_INPUT);
 			String outputDir = cmd.getOptionValue(SHORT_PARAM_OUTPUT);
 
 			ExecutorService executor = Executors.newFixedThreadPool(2);
 			executor.submit(() -> {
 				try {
-					copyFiles(filePath, outputDir, copies);
+					copyFiles(filePath, inputDir, copies);
 				} catch (IOException e) {
 					System.err.print(e.getMessage());
 				}
@@ -56,7 +73,7 @@ public class FileCopyApp {
 			executor.shutdown();
 
 		} catch (Exception e) {
-			formatter.printHelp("OTS performance test", options);
+			formatter.printHelp(HELP, options);
 			System.err.print(e.getMessage());
 		}
 	}
@@ -71,6 +88,11 @@ public class FileCopyApp {
 			throw new IllegalArgumentException("The path for -f must be a file.");
 		}
 
+		File inputDir = new File(cmd.getOptionValue(SHORT_PARAM_INPUT));
+		if (!inputDir.isDirectory()) {
+			throw new IllegalArgumentException("The path for -i must be a directory.");
+		}		
+		
 		File outputDir = new File(cmd.getOptionValue(SHORT_PARAM_OUTPUT));
 		if (!outputDir.isDirectory()) {
 			throw new IllegalArgumentException("The path for -o must be a directory.");
@@ -102,6 +124,8 @@ public class FileCopyApp {
 		Date now =null;
 		long diff = 0;
 
+		System.out.println("File count \t time (ms)");
+
 		AtomicInteger fileCount = new AtomicInteger(0);
 		while (fileCount.get() < targetCount) {
 			File dir = new File(outputDir);
@@ -111,7 +135,7 @@ public class FileCopyApp {
 				diff = now.getTime() - init.getTime();
 
 				fileCount.set(files.length);
-				System.out.println("File count: " + fileCount.get() + " in " + diff + " ms");
+				System.out.println(fileCount.get() + "\t" + diff);
 			}
 			try {
 				Thread.sleep(500);
@@ -120,6 +144,6 @@ public class FileCopyApp {
 				break;
 			}
 		}
-		System.out.println("Target file count reached: " + fileCount.get());
+		System.out.println("\nTarget file count reached: " + fileCount.get());
 	}
 }
