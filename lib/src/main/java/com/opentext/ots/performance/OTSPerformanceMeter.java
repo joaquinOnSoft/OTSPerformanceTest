@@ -25,10 +25,10 @@ public class OTSPerformanceMeter {
 	Invocation example:
 
 	java -jar OTSPerformanceTest-24.09.29.jar /
-		-file C:\\performance\\example.pdf /
-		-input C:\\performance\\input /
-		-output C:\\performance\\output /
-		-copies 10000
+		--file C:\\performance\\example.pdf /
+		--input C:\\performance\\input /
+		--output C:\\performance\\output /
+		--copies 10000
 	""";
 	
 	private static final String LONG_PARAM_INPUT = "input";
@@ -74,7 +74,7 @@ public class OTSPerformanceMeter {
 
 		} catch (Exception e) {
 			formatter.printHelp(HELP, options);
-			System.err.print(e.getMessage());
+			System.err.print(e.getMessage() + "\n\n");
 		}
 	}
 

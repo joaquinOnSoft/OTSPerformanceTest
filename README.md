@@ -62,7 +62,7 @@ Target file count reached: 10000
 ```
 
 > Please note:
-> - The output is .csv file using the tab as field separator
+> - The output is a .csv file using a tab as field separator
 > - `example.pdf` is a 95 kb file
 
 ## Chat GPT prompt used to generate the base code

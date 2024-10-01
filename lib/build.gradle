@@ -11,7 +11,7 @@ plugins {
     id 'java-library'
 }
 
-version = '24.09.29' 
+version = '24.10.01' 
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -31,7 +31,15 @@ jar {
         	'Implementation-Version': version,
         	'Main-Class': 'com.opentext.ots.performance.OTSPerformanceMeter',
         	'Class-Path': '.'
-    }	    
+    }	   
+    
+    from {
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    
+    //https://discuss.gradle.org/t/generate-runnable-jar-pakage-dependencies/28171
+	exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'	
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE	     
 }
 
 dependencies {
