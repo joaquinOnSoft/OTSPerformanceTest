@@ -1,5 +1,6 @@
 package com.opentext.ots.performance;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,6 +11,7 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -129,13 +131,17 @@ public class OTSPerformanceMeter {
 		AtomicInteger fileCount = new AtomicInteger(0);
 		while (fileCount.get() < targetCount) {
 			File dir = new File(outputDir);
-			File[] files = dir.listFiles();
+			File[] files = dir.listFiles(new FilenameFilter() {
+			    public boolean accept(File dir, String name) {
+			        return name.toLowerCase().endsWith(".pdf");
+			    }
+			});
 			if (files != null) {
 				now = GregorianCalendar.getInstance().getTime();
 				diff = now.getTime() - init.getTime();
 
 				fileCount.set(files.length);
-				System.out.println(fileCount.get() + "\t" + diff);
+				System.out.println(fileCount + "\t" + diff);
 			}
 			try {
 				Thread.sleep(500);
@@ -144,6 +150,6 @@ public class OTSPerformanceMeter {
 				break;
 			}
 		}
-		System.out.println("\nTarget file count reached: " + fileCount.get());
+		System.out.println("\nTarget file count reached: " + fileCount);
 	}
 }
