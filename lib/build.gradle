@@ -11,7 +11,7 @@ plugins {
     id 'java-library'
 }
 
-version = '24.10.13' 
+version = '24.10.25' 
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -47,6 +47,7 @@ dependencies {
 
     // Use JUnit Jupiter for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {

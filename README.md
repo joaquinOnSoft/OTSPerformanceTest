@@ -13,7 +13,7 @@ Accepted parameters:
 ## Invocation example
 
 ```
-java -jar OTSPerformanceTest-24.09.29.jar -file C:\performance\example.pdf -input C:\performance\input -output C:\performance\output -copies 10000
+java -jar OTSPerformanceTest-24.10.25.jar -file C:\performance\example.pdf -input C:\performance\input -output C:\performance\output -copies 10000
 ```
 
 ## Output example
